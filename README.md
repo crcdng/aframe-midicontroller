@@ -1,2 +1,2 @@
 # aframe-midicontroller
-Example demonstrationg Web MIDI Api with A-Frame Web XR
+Example demonstrating Web MIDI Api with A-Frame Web XR
