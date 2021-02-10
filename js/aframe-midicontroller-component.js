@@ -22,7 +22,8 @@ function numberToHexString (value) {
  */
 AFRAME.registerComponent('midicontroller', {
   schema: {
-    note: { type: 'number' }, // midi note
+    noteon: { type: 'int' }, // midi note
+    noteoff: { type: 'int' }, // midi note
     cc: { type: 'number' }, // midi control change
     property: { type: 'string' }, // property
     type: { type: 'string' }, // type of value
@@ -41,49 +42,52 @@ AFRAME.registerComponent('midicontroller', {
   },
 
   onMIDISuccess: function (midiAccess, schema, element) {
-   
+    const property = schema.property;
+    const type = schema.type;
+    const value = schema.value;
+
     function noteOn (note, velocity) {
-      const property = schema.property;
-      const value = schema.value;
-      if (note === schema.note) {
-        console.log(note, schema.note, property, value, element);
+      if (note === schema.noteon) {
+        // console.log(note, schema.note, property, type, value, element);
         element.setAttribute(property, value);
       }
     }
 
     function noteOff (note, velocity) {
-      // TODO implement
+      if (note === schema.noteoff) {
+        element.setAttribute(property, value);
+      }
     }
 
-    function controlChange (note, value) {
-      if (note === schema.note) {
-        const component = schema.c;
-        const property = schema.p;
+    function controlChange (cc, value) {
+      if (cc === schema.cc) {
         const fromMin = schema.from[0];
         const fromMax = schema.from[1];
         const toMin = schema.to[0];
         const toMax = schema.to[1];
 
-        const propertyValue = mapInterval(value, fromMin, fromMax, toMin, toMax);
+        console.log(cc, schema.cc, property, type, value, fromMin, fromMax, toMin, toMax, element);
+        const mappedValue = mapInterval(value, fromMin, fromMax, toMin, toMax);
 
-        if (component === 'material.color') {
-          const material = element.getAttribute('material');
-          const currentColor = material.color;
-          // console.log(currentColor);
-          let pos;
-          if (property === 'r') { pos = 1; }
-          if (property === 'g') { pos = 3; }
-          if (property === 'b') { pos = 5; console.log('blue'); }
-          const len = currentColor.length;
-          newColor = (currentColor.slice(0, pos) + numberToHexString(propertyValue) + currentColor.slice(pos + 2, len)).trim();
+        console.log(mappedValue);
 
-          element.setAttribute('material', 'color', newColor);
-        } else {
-          console.log(component + ', ' + property + ', ' + propertyValue);
-          element.setAttribute(component, property, propertyValue);
-        }
+        // if (component === 'material.color') {
+        //   const material = element.getAttribute('material');
+        //   const currentColor = material.color;
+        //   // console.log(currentColor);
+        //   let pos;
+        //   if (property === 'r') { pos = 1; }
+        //   if (property === 'g') { pos = 3; }
+        //   if (property === 'b') { pos = 5; console.log('blue'); }
+        //   const len = currentColor.length;
+        //   newColor = (currentColor.slice(0, pos) + numberToHexString(propertyValue) + currentColor.slice(pos + 2, len)).trim();
+
+        //   element.setAttribute('material', 'color', newColor);
+        // } else {
+        //   console.log(component + ', ' + property + ', ' + propertyValue);
+        //   element.setAttribute(component, property, propertyValue);
+        // }
       }
-      // TODO implement
     }
 
     function programChange (message) {
@@ -107,7 +111,7 @@ AFRAME.registerComponent('midicontroller', {
       } else if (type === 192) { // program change messages
         programChange(note);
       }
-      console.log(' [channel: ' + channel + ', cmd: ' + cmd + ', type: ' + type + ' , note: ' + note + ' , velocity: ' + velocity + ']');
+      // console.log(' [channel: ' + channel + ', cmd: ' + cmd + ', type: ' + type + ' , note: ' + note + ' , velocity: ' + velocity + ']');
     }
 
     const inputs = midiAccess.inputs.values();
@@ -123,9 +127,9 @@ AFRAME.registerComponent('midicontroller', {
     if (navigator.requestMIDIAccess) {
       navigator.requestMIDIAccess(
         { sysex: false }
-      ).then(function (midiAccess) {
+      ).then((midiAccess) => {
         this.onMIDISuccess(midiAccess, data, el);
-      }.bind(this), this.onMIDIFailure);
+      }, this.onMIDIFailure);
     } else {
       console.log('midicontroller: no MIDI support.');
     }
