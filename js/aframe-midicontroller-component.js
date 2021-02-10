@@ -66,10 +66,11 @@ AFRAME.registerComponent('midicontroller', {
         const toMin = schema.to[0];
         const toMax = schema.to[1];
 
-        console.log(cc, schema.cc, property, type, value, fromMin, fromMax, toMin, toMax, element);
+        // console.log(cc, schema.cc, property, type, value, fromMin, fromMax, toMin, toMax, element);
         const mappedValue = mapInterval(value, fromMin, fromMax, toMin, toMax);
 
         console.log(mappedValue);
+        element.setAttribute(property, mappedValue);
 
         // if (component === 'material.color') {
         //   const material = element.getAttribute('material');
