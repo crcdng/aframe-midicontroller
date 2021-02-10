@@ -3,7 +3,7 @@ WORK IN PROGRESS, restored from the ashes of failed experiments
 
 Example, demonstrating WebMIDI in [A-Frame](https://aframe.io/). Live at https://i3games.github.io/aframe-midicontroller/
 
-I use an AKAI LPD8 to change the sphere's position and colour.
+I use an [AKAI LPD8](https://www.akaipro.com/lpd8) to change the sphere's position and colour.
 
 MIDI Notes: 36, 37 (toggle sphere position)
 MIDI CC: 1, 2, 3 (change sphere colour)
