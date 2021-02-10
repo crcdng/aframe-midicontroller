@@ -8,7 +8,7 @@ I use an [AKAI LPD8](https://www.akaipro.com/lpd8) to interact with the elements
 
 MIDI noteOn: 36, 37 (change cube position), 
 MIDI noteOn / noteOff: 38 (toggle sphere size)
-MIDI CC: 1, 2, 3 (change sphere colour)
+MIDI CC: 1, 2, 3 (change cylinder colour r g b)
 
 [Web MIDI API](https://www.w3.org/TR/webmidi/) works in [Chrome and related browsers](https://caniuse.com/midi)
 

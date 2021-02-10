@@ -5,9 +5,10 @@ if (typeof AFRAME === 'undefined') {
 }
 
 // helper
-function mapInterval (x, a, b, c, d) {
+function mapInterval (x, a, b, c, d, toInt) {
   if (b - a === 0) { throw Error('midicontroller: mapInterval division by 0'); }
-  return c + ((x - a) * (d - c) / (b - a));
+  const result = c + ((x - a) * (d - c) / (b - a));
+  return toInt ? Math.floor(result) : result;
 }
 
 function numberToHexString (value) {
@@ -48,13 +49,14 @@ AFRAME.registerComponent('midicontroller', {
 
     function noteOn (note, velocity) {
       if (note === schema.noteon) {
-        // console.log(note, schema.note, property, type, value, element);
+        // console.log(note, schema.noteon, property, type, value, element);
         element.setAttribute(property, value);
       }
     }
 
     function noteOff (note, velocity) {
       if (note === schema.noteoff) {
+        // console.log(note, schema.noteoff, property, type, value, element);
         element.setAttribute(property, value);
       }
     }
@@ -67,27 +69,18 @@ AFRAME.registerComponent('midicontroller', {
         const toMax = schema.to[1];
 
         // console.log(cc, schema.cc, property, type, value, fromMin, fromMax, toMin, toMax, element);
-        const mappedValue = mapInterval(value, fromMin, fromMax, toMin, toMax);
-
-        console.log(mappedValue);
-        element.setAttribute(property, mappedValue);
-
-        // if (component === 'material.color') {
-        //   const material = element.getAttribute('material');
-        //   const currentColor = material.color;
-        //   // console.log(currentColor);
-        //   let pos;
-        //   if (property === 'r') { pos = 1; }
-        //   if (property === 'g') { pos = 3; }
-        //   if (property === 'b') { pos = 5; console.log('blue'); }
-        //   const len = currentColor.length;
-        //   newColor = (currentColor.slice(0, pos) + numberToHexString(propertyValue) + currentColor.slice(pos + 2, len)).trim();
-
-        //   element.setAttribute('material', 'color', newColor);
-        // } else {
-        //   console.log(component + ', ' + property + ', ' + propertyValue);
-        //   element.setAttribute(component, property, propertyValue);
-        // }
+        const mappedValue = mapInterval(value, fromMin, fromMax, toMin, toMax, true);
+        if (property.startsWith('material.color')) {
+          const material = element.getAttribute('material');
+          const currentColor = material.color;
+          let pos;
+          if (property.endsWith('r')) { pos = 1; }
+          if (property.endsWith('g')) { pos = 3; }
+          if (property.endsWith('b')) { pos = 5; }
+          const len = currentColor.length;
+          const newColor = (currentColor.slice(0, pos) + numberToHexString(mappedValue) + currentColor.slice(pos + 2, len)).trim();
+          element.setAttribute('material', 'color', newColor);
+        }
       }
     }
 
