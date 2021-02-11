@@ -69,7 +69,9 @@ AFRAME.registerComponent('midicontroller', {
         const toMax = schema.to[1];
 
         // console.log(cc, schema.cc, property, type, value, fromMin, fromMax, toMin, toMax, element);
+
         const mappedValue = mapInterval(value, fromMin, fromMax, toMin, toMax, true);
+        // material.color gets pseudo-attributes r, g, b 
         if (property.startsWith('material.color')) {
           const material = element.getAttribute('material');
           const currentColor = material.color;
